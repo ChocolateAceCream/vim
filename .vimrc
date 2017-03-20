@@ -25,11 +25,15 @@ Plugin 'mxw/vim-jsx'
 
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'kchmck/vim-coffee-script'
+Plugin 'cakebaker/scss-syntax.vim'
 " Now we can turn our filetype functionality back on
 filetype plugin indent on
 
 " Enable sparkup plugein in jsx file
 autocmd FileType javascript.jsx runtime! ftplugin/html/sparkup.vim
+
+" for JSX
+let g:jsx_ext_required = 0 " Allow JSX in normal JS files"
 
 let mapleader=" "
 set clipboard=unnamedplus
@@ -455,3 +459,6 @@ function RunWith (command)
 endfunction
 
 autocmd FileType ruby   nmap <F5> :call RunWith("ruby")<cr>
+set iskeyword +=-
+inoremap <expr> j ((pumvisible())?("\<C-n>"):("j"))
+inoremap <expr> k ((pumvisible())?("\<C-p>"):("k"))
