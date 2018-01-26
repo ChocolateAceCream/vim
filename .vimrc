@@ -13,6 +13,9 @@ call vundle#rc()
 " 'user/repository' format
 Plugin 'gmarik/vundle'
 
+" typescript syntax highlight
+Plugin 'leafgarland/typescript-vim'
+
 " We could also add repositories with a ".git" extension
 Plugin 'scrooloose/nerdtree.git'
 
@@ -25,15 +28,11 @@ Plugin 'mxw/vim-jsx'
 
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'kchmck/vim-coffee-script'
-Plugin 'cakebaker/scss-syntax.vim'
 " Now we can turn our filetype functionality back on
 filetype plugin indent on
 
 " Enable sparkup plugein in jsx file
 autocmd FileType javascript.jsx runtime! ftplugin/html/sparkup.vim
-
-" for JSX
-let g:jsx_ext_required = 0 " Allow JSX in normal JS files"
 
 let mapleader=" "
 set clipboard=unnamedplus
@@ -51,9 +50,11 @@ function! g:ToggleNuMode()
 		set relativenumber
 	endif
 endfunc
+nnoremap <C-n> :call NumberToggle()<cr>
 
 map <C-b> :call g:ToggleNuMode()<CR>
-:nmap <C-N><C-N> :set invnumber<CR>
+:nmap <C-N><C-N> :set invnumber <bar> set nornu<CR>
+:nmap <C-a> :TsuquyomiQuickFix<CR>
 
 set pastetoggle=<F2>
 inoremap <A-h> <C-o>h
@@ -458,7 +459,22 @@ function RunWith (command)
   execute "!clear;time " . a:command . " " . expand("%")
 endfunction
 
+"Use TAB to complete when typing words, else inserts TABs as usual.
+"Uses dictionary and source files to find matching words to complete.
+
+"See help completion for source,
+"Note: usual completion is on <C-n> but more trouble to press all the time.
+"Never type the same word twice and maybe learn a new spellings!
+"Use the Linux dictionary when spelling is in doubt.
+"Window users can copy the file to their machine.
+function! Tab_Or_Complete()
+  if col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
+    return "\<C-N>"
+  else
+    return "\<Tab>"
+  endif
+endfunction
+:inoremap <Tab> <C-R>=Tab_Or_Complete()<CR>
+:set dictionary="/usr/dict/words"
+
 autocmd FileType ruby   nmap <F5> :call RunWith("ruby")<cr>
-set iskeyword +=-
-inoremap <expr> j ((pumvisible())?("\<C-n>"):("j"))
-inoremap <expr> k ((pumvisible())?("\<C-p>"):("k"))
